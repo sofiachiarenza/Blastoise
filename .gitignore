@@ -17,3 +17,5 @@
 /shear_kernel.npy
 /z_cheb.npy
 /z_nl.npz
+*.npy
+*.npz
