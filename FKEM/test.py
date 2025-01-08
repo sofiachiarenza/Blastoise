@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 
 print('This is a test of fftlog module written by Xiao Fang.')
 print('nu is required to be between -ell to 2.')
-k, pk = np.loadtxt('../Pk_test', usecols=(0,1), unpack=True)
+k, pk = np.loadtxt('Pk_test.txt', usecols=(0,1), unpack=True)
 N = k.size
 print('number of input data points: '+str(N))
 ell = 100
