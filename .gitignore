@@ -20,3 +20,4 @@
 *.npy
 *.npz
 *.txt
+*.pyc
