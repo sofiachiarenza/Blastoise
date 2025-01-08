@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class N5KCalculatorBase(object):
+class CalculatorBase(object):
     name = 'Base'
     needed_fields = ['output_prefix']
 
@@ -14,8 +14,8 @@ class N5KCalculatorBase(object):
             with open(fname_config) as f:
                 self.config = yaml.safe_load(f)
 
-        self.nb_g = 10
-        self.nb_s = 5
+        self.nb_g = 1
+        self.nb_s = 1
         if 'select_cl' in self.config:
             self.nb_g = len(self.config['select_cl'])
         if 'select_sh' in self.config:
