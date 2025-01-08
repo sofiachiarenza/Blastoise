@@ -29,10 +29,10 @@ class CalculatorBase(object):
                 raise ValueError("You must provide %s"%(name))
 
     def get_pk(self):
-        return np.load('input/pk.npz')
+        return np.load('inputs/pk.npz')
 
     def get_background(self):
-        return np.load('input/background.npz')
+        return np.load('inputs/background.npz')
 
     def get_cosmological_parameters(self):
         return {'Omega_m': 0.3156,
@@ -87,7 +87,7 @@ class CalculatorBase(object):
         return nl_cl, nl_sh
 
     def get_tracer_kernels(self):
-        filename = self.config.get('kernel_file', 'input/kernels_fullwidth.npz')
+        filename = self.config.get('kernel_file', 'inputs/kernels.npz')
         d = np.load(filename)
         kernels_cl = d['kernels_cl']
         kernels_sh = d['kernels_sh']
