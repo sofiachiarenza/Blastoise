@@ -1,4 +1,4 @@
-/.DS_Store
+*.DS_Store
 /Icon
 /blast_cls
 /camb_lin_pk.npz
@@ -19,3 +19,4 @@
 /z_nl.npz
 *.npy
 *.npz
+*.txt
