@@ -81,6 +81,64 @@ class fftlog(object):
 		Fy = irfft(np.conj(h_m)) * y**(-self.nu) * np.sqrt(np.pi)/4.
 		print(self.N_extrap_high,self.N,self.N_extrap_low)
 		return y[self.N_extrap_high:self.N-self.N_extrap_low], Fy[self.N_extrap_high:self.N-self.N_extrap_low]
+	
+	def fftlog_ells(self, ell_array, derivative=0):
+		Nell = len(ell_array)
+		y_results = []
+		Fy_results = []
+
+		for ell in ell_array:
+			# Compute y and Fy for the current ell using the single ell FFTLog implementation
+			y, Fy = self.fftlog(ell)
+			y_results.append(y)
+			Fy_results.append(Fy)
+
+		# Convert results to arrays
+		y_results = np.array(y_results)  # Shape: (Nell, N_effective)
+		Fy_results = np.array(Fy_results)  # Shape: (Nell, N_effective)
+
+		return y_results, Fy_results
+	
+	def fftlog_modified_ells(self, ell_array):
+		Nell = len(ell_array)
+
+		# Initialize output arrays
+		N_original = len(self.x_origin)  # Use the original size before padding/extrapolation
+		y_results = np.zeros((Nell, N_original))
+		Fy_results = np.zeros((Nell, N_original))
+
+		# Prepare padded input function
+		fb = np.zeros(self.N)  # Initialize padded array
+		fb[self.N_pad:self.N_pad + N_original] = self.fx[self.N_pad:self.N_pad + N_original] / (self.x[self.N_pad:self.N_pad + N_original] ** self.nu)
+
+		# Perform forward FFT
+		fft_forward = np.fft.rfft(fb)
+
+		# Apply window function
+		width = int(self.c_window_width * self.N // 2)
+		window = np.hanning(2 * width)
+		fft_forward[:width] *= window[:width]
+		fft_forward[-width:] *= window[-width:]
+
+		for j, ell in enumerate(ell_array):
+			# Calculate g_l factors
+			z = self.nu + 1j * self.eta_m
+			g_l = (2 ** z) * np.exp(-z * np.log(ell + 1))
+
+			# y grid for this ell
+			y_results[j, :] = (ell + 1) / self.x_origin[::-1]  # Use original x values for the output
+			y0 = y_results[j, 0]
+
+			# Modify FFT values
+			fft_modified = np.conj(fft_forward * np.exp(-1j * self.eta_m * np.log(self.x[0] * y0)) * g_l)
+
+			# Perform inverse FFT
+			fb_ifft = np.fft.irfft(fft_modified, n=self.N)
+
+			# Extract and normalize results
+			Fy_results[j, :] = fb_ifft[self.N_pad:self.N_pad + N_original] * np.sqrt(np.pi) / (4. * self.N * y_results[j, :] ** self.nu)
+
+		return y_results, Fy_results
 
 	def fftlog_dj(self, ell):
 		"""
